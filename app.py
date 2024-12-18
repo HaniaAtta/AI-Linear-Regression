@@ -15,47 +15,42 @@ def perform_linear_regression(X, y):
 def main():
     st.title("Linear Regression App")
 
-    # Input for x values
-    x_values = st.text_area(
-        "Enter x values (comma-separated):",
-        placeholder="e.g., 1, 2, 3, 4, 5",
-    )
+    # File uploader for input CSV file
+    uploaded_file = st.file_uploader("Upload a CSV file with 'x' and 'y' columns:", type="csv")
 
-    # Input for y values
-    y_values = st.text_area(
-        "Enter y values (comma-separated):",
-        placeholder="e.g., 2, 4, 6, 8, 10",
-    )
-
-    if st.button("Perform Linear Regression"):
+    if uploaded_file is not None:
         try:
-            # Parse x and y values
-            X = np.array([float(x) for x in x_values.split(",")]).reshape(-1, 1)
-            y = np.array([float(y) for y in y_values.split(",")])
+            # Load the uploaded CSV file
+            data = pd.read_csv(uploaded_file)
 
-            if len(X) != len(y):
-                st.error("The number of x and y values must be equal.")
-            else:
-                # Perform linear regression
-                model, mse = perform_linear_regression(X, y)
+            # Check if required columns are present
+            if 'x' not in data.columns or 'y' not in data.columns:
+                st.error("The uploaded file must contain 'x' and 'y' columns.")
+                return
 
-                # Display results
-                st.success("Linear regression performed successfully!")
-                st.write(f"Model Coefficient (Slope): {model.coef_[0]:.4f}")
-                st.write(f"Model Intercept: {model.intercept_:.4f}")
-                st.write(f"Mean Squared Error: {mse:.4f}")
+            # Extract x and y values
+            X = data['x'].values.reshape(-1, 1)
+            y = data['y'].values
 
-                # Display predictions
-                predictions = model.predict(X)
-                results_df = pd.DataFrame({"x": X.flatten(), "y": y, "Predicted y": predictions})
-                st.write("Predictions:")
-                st.dataframe(results_df)
+            # Perform linear regression
+            model, mse = perform_linear_regression(X, y)
 
-                # Plot results
-                st.line_chart(pd.DataFrame({"Actual y": y, "Predicted y": predictions}, index=X.flatten()))
-        except ValueError:
-            st.error("Please ensure all inputs are numeric and properly formatted.")
+            # Display results
+            st.success("Linear regression performed successfully!")
+            st.write(f"Model Coefficient (Slope): {model.coef_[0]:.4f}")
+            st.write(f"Model Intercept: {model.intercept_:.4f}")
+            st.write(f"Mean Squared Error: {mse:.4f}")
+
+            # Display predictions
+            predictions = model.predict(X)
+            results_df = pd.DataFrame({"x": X.flatten(), "y": y, "Predicted y": predictions})
+            st.write("Predictions:")
+            st.dataframe(results_df)
+
+            # Plot results
+            st.line_chart(pd.DataFrame({"Actual y": y, "Predicted y": predictions}, index=X.flatten()))
+        except Exception as e:
+            st.error(f"An error occurred while processing the file: {e}")
 
 if __name__ == "__main__":
     main()
-
