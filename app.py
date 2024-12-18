@@ -78,4 +78,4 @@ else:
 
 # Footer
 st.write("\n---")
-st.write("Built with ❤️ using Streamlit | Linear Regression App 📈")
+
