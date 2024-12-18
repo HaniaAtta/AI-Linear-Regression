@@ -1,11 +1,18 @@
 import os
-os.system('pip install scikit-learn numpy pandas streamlit')
-
+import subprocess
 import streamlit as st
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+
+# Ensure required packages are installed
+required_packages = ["streamlit", "numpy", "pandas", "scikit-learn"]
+for package in required_packages:
+    try:
+        __import__(package)
+    except ImportError:
+        subprocess.check_call(["pip", "install", package])
 
 # Function to perform linear regression and calculate error
 def perform_linear_regression(X, y):
